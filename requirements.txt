@@ -1,0 +1,10 @@
+flask
+flask-cors
+werkzeug
+numpy
+Pillow
+tensorflow-cpu
+opencv-python-headless
+scikit-image
+nibabel
+gunicorn
