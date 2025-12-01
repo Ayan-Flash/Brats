@@ -53,7 +53,17 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
 
 # All available models from both systems
+# All available models from both systems
 ALL_MODELS = {
+    'best_segmentation': {
+        'path': os.path.join(CODE_DIR, 'models', 'best_simple_cnn.h5'),
+        'name': 'Best Segmentation (CNN)',
+        'type': 'segmentation',
+        'description': 'Top ranked BraTS trained segmentation model',
+        'classes': {0: 'Background', 1: 'Tumor'},
+        'input_size': (240, 240),
+        'channels': 2
+    },
     'keras_basic': {
         'path': os.path.join(CODE_DIR, 'models', 'my_model.keras'),
         'name': 'Keras Basic Model',
@@ -62,42 +72,6 @@ ALL_MODELS = {
         'classes': {0: 'No Tumor', 1: 'Glioma', 2: 'Meningioma', 3: 'Pituitary'},
         'input_size': (64, 64),
         'channels': 1
-    },
-    'simple_cnn_code': {
-        'path': os.path.join(CODE_DIR, 'models', 'simple_cnn_model.h5'),
-        'name': 'Simple CNN (CODE)',
-        'type': 'segmentation',
-        'description': 'Tumor segmentation model',
-        'classes': {0: 'Background', 1: 'Tumor'},
-        'input_size': (128, 128),
-        'channels': 2
-    },
-    'simple_cnn_files': {
-        'path': os.path.join(PARENT_DIR, 'Files', 'simple_cnn_model.h5'),
-        'name': 'Simple CNN (BraTS)',
-        'type': 'segmentation',
-        'description': 'BraTS trained segmentation model',
-        'classes': {0: 'Background', 1: 'Tumor'},
-        'input_size': (240, 240),
-        'channels': 2
-    },
-    'improved_cnn': {
-        'path': os.path.join(CODE_DIR, 'models', 'improved_simple_cnn_11_20.keras'),
-        'name': 'Improved CNN',
-        'type': 'segmentation',
-        'description': 'Enhanced segmentation with better accuracy',
-        'classes': {0: 'Background', 1: 'Tumor'},
-        'input_size': (240, 240),
-        'channels': 2
-    },
-    'attention_unet': {
-        'path': os.path.join(CODE_DIR, 'models', 'improved_attention_unet_11_20.keras'),
-        'name': 'Attention U-Net',
-        'type': 'segmentation',
-        'description': 'Advanced attention mechanism for precise segmentation',
-        'classes': {0: 'Background', 1: 'Tumor'},
-        'input_size': (240, 240),
-        'channels': 2
     },
     'brain_detector': {
         'path': os.path.join(CODE_DIR, 'models', 'brain_tumor_detector.h5'),
@@ -383,7 +357,7 @@ def analyze():
             return jsonify({'success': False, 'error': 'Invalid file type'}), 400
         
         # Get parameters
-        model_key = request.form.get('model', 'keras_basic')
+        model_key = request.form.get('model', 'best_segmentation')
         patient_age = request.form.get('age', None)
         if patient_age:
             try:
