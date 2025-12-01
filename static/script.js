@@ -397,7 +397,7 @@ function displaySurvival(survival) {
             <div class="confidence-fill" style="width: ${confidence}%; background: linear-gradient(90deg, #f59e0b, #ef4444);"></div>
         </div>
         <p style="margin-top: 15px; font-size: 0.9rem; color: #64748b;">
-            ⚠️ This is an AI prediction. Consult with medical professionals for accurate prognosis.
+            ⚠️ This is a prediction. Consult with medical professionals for accurate prognosis.
         </p>
     `;
 }

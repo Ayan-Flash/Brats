@@ -230,7 +230,7 @@ def preprocess_for_model(img_bytes, model_info, filepath=None):
 
 def extract_segmentation_features(mask, probability_map):
     """Extract features from segmentation mask"""
-    if mask is None or mask.sum() < 10:
+    if mask is None or mask.sum() < 50:
         return {
             'tumor_present': False,
             'tumor_pixels': 0,
@@ -441,15 +441,15 @@ def analyze():
             pred_std = probability_map.std()
             
             # If predictions are very uniform (low std), likely no tumor
-            if pred_std < 0.05:
+            if pred_std < 0.1:
                 # Very uniform predictions - likely no distinct tumor
-                threshold = 0.9  # High threshold
-            elif pred_mean > 0.8:
-                # Very high mean - model is uncertain, use higher threshold
-                threshold = 0.7
+                threshold = 0.95  # Very High threshold
+            elif pred_mean > 0.7:
+                # High mean - model is uncertain
+                threshold = 0.8
             else:
-                # Normal case - use standard threshold
-                threshold = 0.5
+                # Normal case - use stricter threshold
+                threshold = 0.65
             
             mask = (probability_map >= threshold).astype(np.uint8)
             
@@ -462,8 +462,9 @@ def analyze():
             print(f"Features extracted: tumor_present={features.get('tumor_present', False)}, coverage={features.get('coverage_pct', 0):.2f}%")
             
             # Classification based on segmentation
-            tumor_detected = features.get('tumor_present', False)
+            # Require at least 2% coverage to be confident it's a tumor (filters noise)
             coverage = features.get('coverage_pct', 0)
+            tumor_detected = features.get('tumor_present', False) and coverage > 3.0
             
             # Infer tumor type from features
             if tumor_detected:
