@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Enhanced Brain Tumor Detection & Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      
+      body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: #333;
+        line-height: 1.6;
+      }
+      
+      .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+      
+      .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 2rem;
+      }
+      
+      .header h1 {
+        font-size: 2.8rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      }
+      
+      .header p { font-size: 1.2rem; opacity: 0.95; }
+      
+      .main-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+      }
+      
+      .upload-section {
+        background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+        border: 3px dashed #667eea;
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+      }
+      
+      .upload-section:hover {
+        border-color: #5a67d8;
+        background: #e8edff;
+        transform: translateY(-2px);
+      }
+      
+      .form-group { margin-bottom: 1.5rem; }
+      
+      .form-label {
+        display: block;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      
+      .form-select, .form-input {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 1rem;
+        background: white;
+        transition: all 0.3s ease;
+        font-family: 'Inter', sans-serif;
+      }
+      
+      .form-select:focus, .form-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+      }
+      
+      .btn {
+        padding: 0.85rem 2rem;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      
+      .btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+      }
+      
+      .btn-primary:disabled {
+        background: #cbd5e0;
+        cursor: not-allowed;
+      }
+      
+      .btn-success {
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        color: white;
+      }
+      
+      .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(72, 187, 120, 0.4);
+      }
+      
+      .preview-img {
+        max-width: 500px;
+        max-height: 500px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        margin: 1rem auto;
+        display: block;
+      }
+      
+      .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+      
+      .result-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border-left: 5px solid #667eea;
+      }
+      
+      .result-card.success { border-left-color: #48bb78; }
+      .result-card.warning { border-left-color: #ed8936; }
+      .result-card.danger { border-left-color: #e53e3e; }
+      .result-card.info { border-left-color: #4299e1; }
+      
+      .result-card h3 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #2d3748;
+      }
+      
+      .metric-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e2e8f0;
+      }
+      
+      .metric-row:last-child { border-bottom: none; }
+      
+      .metric-label {
+        font-weight: 600;
+        color: #4a5568;
+        font-size: 0.9rem;
+      }
+      
+      .metric-value {
+        font-weight: 700;
+        color: #2d3748;
+        font-size: 0.95rem;
+      }
+      
+      .confidence-bar {
+        width: 100%;
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 0.5rem;
+      }
+      
+      .confidence-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #48bb78 0%, #38a169 100%);
+        transition: width 0.5s ease;
+      }
+      
+      .diagnosis-banner {
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+      
+      .diagnosis-banner.positive {
+        background: linear-gradient(135deg, #fed7d7 0%, #fc8181 100%);
+        color: #742a2a;
+      }
+      
+      .diagnosis-banner.negative {
+        background: linear-gradient(135deg, #c6f6d5 0%, #68d391 100%);
+        color: #22543d;
+      }
+      
+      .diagnosis-banner h2 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .diagnosis-banner .confidence {
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+      
+      .recommendations {
+        background: #fffaf0;
+        border: 2px solid #fbd38d;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+      }
+      
+      .recommendations h3 {
+        color: #744210;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .recommendations ul {
+        list-style: none;
+        padding-left: 0;
+      }
+      
+      .recommendations li {
+        padding: 0.5rem 0;
+        padding-left: 1.5rem;
+        position: relative;
+        color: #744210;
+      }
+      
+      .recommendations li:before {
+        content: "➤";
+        position: absolute;
+        left: 0;
+        color: #ed8936;
+      }
+      
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+      
+      .loading-content {
+        background: white;
+        padding: 3rem;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      }
+      
+      .spinner {
+        width: 60px;
+        height: 60px;
+        border: 6px solid #e2e8f0;
+        border-top-color: #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      
+      .disclaimer {
+        background: #fff5f5;
+        border: 2px solid #feb2b2;
+        border-radius: 15px;
+        padding: 1.5rem;
+        color: #742a2a;
+      }
+      
+      .disclaimer h4 {
+        color: #c53030;
+        margin-bottom: 0.5rem;
+      }
+      
+      .feature-badge {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        background: #e6fffa;
+        color: #234e52;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin: 0.2rem;
+      }
+      
+      @media (max-width: 768px) {
+        .container { padding: 1rem; }
+        .header h1 { font-size: 2rem; }
+        .results-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-brain"></i> Enhanced Brain Tumor Detection</h1>
+            <p>Comprehensive AI-Powered Medical Image Analysis System</p>
+        </div>
+
+        <div class="main-card">
+            <!-- Model Selection -->
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-microchip"></i> AI Model Selection</label>
+                <select id="modelSelect" class="form-select">
+                    <option value="">Loading models...</option>
+                </select>
+                <div id="modelInfo" style="margin-top: 0.5rem; padding: 0.5rem; background: #f7fafc; border-radius: 8px; font-size: 0.9rem; color: #4a5568;"></div>
+            </div>
+
+            <!-- Patient Information -->
+            <div class="form-group">
+                <label class="form-label"><i class="fas fa-user"></i> Patient Age (Optional)</label>
+                <input type="number" id="ageInput" class="form-input" placeholder="Enter patient age for survival analysis" min="0" max="120" />
+            </div>
+
+            <!-- Upload Section -->
+            <div class="upload-section" id="uploadArea">
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-upload"></i> Upload Medical Image</label>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;" />
+                    <button onclick="document.getElementById('fileInput').click()" class="btn btn-primary">
+                        <i class="fas fa-folder-open"></i> Choose Image File
+                    </button>
+                    <button id="analyzeBtn" class="btn btn-success" disabled style="margin-left: 1rem;">
+                        <i class="fas fa-brain"></i> Analyze Now
+                    </button>
+                    <div style="margin-top: 1rem; font-size: 0.9rem; color: #718096;">
+                        Supported: JPG, PNG, GIF, BMP, NII, DCM | Max size: 16MB
+                    </div>
+                </div>
+            </div>
+
+            <div id="previewContainer" style="text-align: center; display: none;">
+                <img id="preview" class="preview-img" />
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <h3 style="color: #2d3748; margin-bottom: 0.5rem;">Analyzing Image...</h3>
+                <p style="color: #718096;">AI is processing your medical image</p>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" style="display: none;">
+            <!-- Diagnosis Banner -->
+            <div id="diagnosisBanner" class="main-card"></div>
+
+            <!-- Results Grid -->
+            <div class="results-grid">
+                <!-- Classification Card -->
+                <div class="result-card" id="classificationCard">
+                    <h3><i class="fas fa-stethoscope"></i> Classification</h3>
+                    <div id="classificationContent"></div>
+                </div>
+
+                <!-- Segmentation Card -->
+                <div class="result-card info" id="segmentationCard" style="display: none;">
+                    <h3><i class="fas fa-brain"></i> Tumor Segmentation</h3>
+                    <div id="segmentationContent"></div>
+                </div>
+
+                <!-- Features Card -->
+                <div class="result-card warning" id="featuresCard" style="display: none;">
+                    <h3><i class="fas fa-chart-line"></i> Radiomic Features</h3>
+                    <div id="featuresContent"></div>
+                </div>
+
+                <!-- Survival Card -->
+                <div class="result-card danger" id="survivalCard" style="display: none;">
+                    <h3><i class="fas fa-heartbeat"></i> Survival Analysis</h3>
+                    <div id="survivalContent"></div>
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="main-card">
+                <div class="recommendations">
+                    <h3><i class="fas fa-clipboard-list"></i> Clinical Recommendations</h3>
+                    <ul id="recommendationsList"></ul>
+                </div>
+            </div>
+
+            <div class="main-card" style="text-align: center;">
+                <button onclick="resetAnalysis()" class="btn btn-primary">
+                    <i class="fas fa-redo"></i> Analyze Another Image
+                </button>
+            </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="main-card disclaimer">
+            <h4><i class="fas fa-exclamation-triangle"></i> Medical Disclaimer</h4>
+            <p>This AI-powered tool is intended for research and educational purposes only. Results should not be used as the sole basis for medical diagnosis or treatment decisions. Always consult qualified healthcare professionals for accurate medical evaluation and advice.</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        const fileInput = document.getElementById('fileInput');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const modelSelect = document.getElementById('modelSelect');
+        const modelInfo = document.getElementById('modelInfo');
+        const ageInput = document.getElementById('ageInput');
+        const preview = document.getElementById('preview');
+        const previewContainer = document.getElementById('previewContainer');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const resultsSection = document.getElementById('resultsSection');
+
+        let selectedFile = null;
+        let availableModels = {};
+
+        // Load models on page load
+        async function loadModels() {
+            try {
+                const res = await fetch(`${API_BASE}/api/models`);
+                const data = await res.json();
+                availableModels = data.models || {};
+                
+                modelSelect.innerHTML = '';
+                
+                if (Object.keys(availableModels).length === 0) {
+                    modelSelect.innerHTML = '<option value="">No models available</option>';
+                    return;
+                }
+                
+                for (const [key, info] of Object.entries(availableModels)) {
+                    const option = document.createElement('option');
+                    option.value = key;
+                    option.textContent = `${info.name} (${info.type})`;
+                    modelSelect.appendChild(option);
+                }
+                
+                updateModelInfo();
+            } catch (err) {
+                console.error('Error loading models:', err);
+                modelSelect.innerHTML = '<option value="">Error loading models</option>';
+            }
+        }
+
+        function updateModelInfo() {
+            const key = modelSelect.value;
+            if (!key || !availableModels[key]) {
+                modelInfo.textContent = '';
+                return;
+            }
+            
+            const info = availableModels[key];
+            const badges = [];
+            badges.push(`<span class="feature-badge">${info.type}</span>`);
+            badges.push(`<span class="feature-badge">${info.input_size[0]}×${info.input_size[1]}</span>`);
+            badges.push(`<span class="feature-badge">${info.channels}-channel</span>`);
+            badges.push(`<span class="feature-badge">${info.size_mb} MB</span>`);
+            
+            modelInfo.innerHTML = `
+                <strong>${info.name}</strong><br>
+                ${info.description}<br>
+                ${badges.join(' ')}
+            `;
+        }
+
+        modelSelect.addEventListener('change', updateModelInfo);
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) {
+                analyzeBtn.disabled = true;
+                previewContainer.style.display = 'none';
+                return;
+            }
+            
+            selectedFile = file;
+            analyzeBtn.disabled = false;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        analyzeBtn.addEventListener('click', analyzeImage);
+
+        async function analyzeImage() {
+            if (!selectedFile) {
+                alert('Please select an image first');
+                return;
+            }
+            
+            const modelKey = modelSelect.value;
+            if (!modelKey) {
+                alert('Please select a model first');
+                return;
+            }
+            
+            loadingOverlay.style.display = 'flex';
+            
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('model', modelKey);
+            
+            const age = ageInput.value;
+            if (age) {
+                formData.append('age', age);
+            }
+            
+            try {
+                const res = await fetch(`${API_BASE}/api/analyze`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await res.json();
+                
+                if (!res.ok) {
+                    throw new Error(data.error || 'Analysis failed');
+                }
+                
+                displayResults(data);
+            } catch (err) {
+                alert(`Error: ${err.message}`);
+                console.error(err);
+            } finally {
+                loadingOverlay.style.display = 'none';
+            }
+        }
+
+        function displayResults(data) {
+            resultsSection.style.display = 'block';
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+            
+            // Diagnosis Banner
+            const classification = data.classification || {};
+            const tumorDetected = classification.tumor_detected;
+            const confidence = (classification.confidence * 100).toFixed(1);
+            
+            const banner = document.getElementById('diagnosisBanner');
+            banner.className = `main-card diagnosis-banner ${tumorDetected ? 'positive' : 'negative'}`;
+            banner.innerHTML = `
+                <h2>
+                    <i class="fas fa-${tumorDetected ? 'exclamation-circle' : 'check-circle'}"></i>
+                    ${tumorDetected ? 'Tumor Detected' : 'No Tumor Detected'}
+                </h2>
+                <div style="font-size: 1.5rem; margin: 1rem 0; font-weight: 600;">
+                    ${classification.predicted_class}
+                </div>
+                <div class="confidence">Confidence: ${confidence}%</div>
+                ${data.patient_age ? `<div style="margin-top: 1rem; font-size: 1.1rem;">Patient Age: ${data.patient_age} years</div>` : ''}
+            `;
+            
+            // Classification Card
+            displayClassification(classification);
+            
+            // Segmentation Card
+            if (data.segmentation) {
+                document.getElementById('segmentationCard').style.display = 'block';
+                displaySegmentation(data.segmentation);
+            }
+            
+            // Features Card
+            if (data.features) {
+                document.getElementById('featuresCard').style.display = 'block';
+                displayFeatures(data.features);
+            }
+            
+            // Survival Card
+            if (data.survival) {
+                document.getElementById('survivalCard').style.display = 'block';
+                displaySurvival(data.survival);
+            }
+            
+            // Recommendations
+            displayRecommendations(data.summary?.recommendations || []);
+        }
+
+        function displayClassification(classification) {
+            const content = document.getElementById('classificationContent');
+            const confidence = (classification.confidence * 100).toFixed(1);
+            
+            let html = `
+                <div class="metric-row">
+                    <span class="metric-label">Tumor Status</span>
+                    <span class="metric-value">${classification.tumor_detected ? 'Detected' : 'Not Detected'}</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Diagnosis</span>
+                    <span class="metric-value">${classification.predicted_class}</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Confidence</span>
+                    <span class="metric-value">${confidence}%</span>
+                </div>
+            `;
+            
+            if (classification.inference_method) {
+                html += `
+                    <div class="metric-row">
+                        <span class="metric-label">Method</span>
+                        <span class="metric-value" style="font-size: 0.8rem;">${classification.inference_method}</span>
+                    </div>
+                `;
+            }
+            
+            html += `<div class="confidence-bar"><div class="confidence-fill" style="width: ${confidence}%"></div></div>`;
+            
+            if (classification.all_predictions && classification.all_predictions.length > 1) {
+                html += '<div style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid #e2e8f0;"><strong>Alternative Diagnoses:</strong></div>';
+                classification.all_predictions.slice(1, 4).forEach(pred => {
+                    html += `
+                        <div class="metric-row">
+                            <span class="metric-label">${pred.class_name}</span>
+                            <span class="metric-value">${(pred.probability * 100).toFixed(1)}%</span>
+                        </div>
+                    `;
+                });
+            }
+            
+            content.innerHTML = html;
+        }
+
+        function displaySegmentation(segmentation) {
+            const content = document.getElementById('segmentationContent');
+            const coverage = segmentation.coverage.toFixed(2);
+            
+            content.innerHTML = `
+                <div class="metric-row">
+                    <span class="metric-label">Status</span>
+                    <span class="metric-value">${segmentation.success ? 'Success' : 'Failed'}</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Tumor Coverage</span>
+                    <span class="metric-value">${coverage}%</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Tumor Pixels</span>
+                    <span class="metric-value">${segmentation.tumor_pixels.toLocaleString()}</span>
+                </div>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" style="width: ${Math.min(coverage * 5, 100)}%; background: linear-gradient(90deg, #4299e1, #667eea);"></div>
+                </div>
+            `;
+        }
+
+        function displayFeatures(features) {
+            const content = document.getElementById('featuresContent');
+            
+            if (!features.tumor_present) {
+                content.innerHTML = '<p style="color: #718096;">No tumor features to analyze</p>';
+                return;
+            }
+            
+            let html = `
+                <div class="metric-row">
+                    <span class="metric-label">Tumor Regions</span>
+                    <span class="metric-value">${features.num_regions || 1}</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Total Area</span>
+                    <span class="metric-value">${features.tumor_pixels?.toLocaleString() || 0} px</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Coverage</span>
+                    <span class="metric-value">${features.coverage_pct?.toFixed(2) || 0}%</span>
+                </div>
+            `;
+            
+            if (features.largest_area) {
+                html += `
+                    <div class="metric-row">
+                        <span class="metric-label">Largest Region</span>
+                        <span class="metric-value">${features.largest_area.toLocaleString()} px</span>
+                    </div>
+                `;
+            }
+            
+            if (features.eccentricity !== undefined) {
+                html += `
+                    <div class="metric-row">
+                        <span class="metric-label">Eccentricity</span>
+                        <span class="metric-value">${features.eccentricity.toFixed(3)}</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Solidity</span>
+                        <span class="metric-value">${features.solidity.toFixed(3)}</span>
+                    </div>
+                `;
+            }
+            
+            if (features.mean_confidence !== undefined) {
+                html += `
+                    <div class="metric-row">
+                        <span class="metric-label">Mean Confidence</span>
+                        <span class="metric-value">${features.mean_confidence.toFixed(3)}</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Max Confidence</span>
+                        <span class="metric-value">${features.max_confidence.toFixed(3)}</span>
+                    </div>
+                `;
+            }
+            
+            content.innerHTML = html;
+        }
+
+        function displaySurvival(survival) {
+            const content = document.getElementById('survivalContent');
+            const confidence = ((survival.confidence || 0) * 100).toFixed(1);
+            
+            content.innerHTML = `
+                <div class="metric-row">
+                    <span class="metric-label">Prediction</span>
+                    <span class="metric-value">${survival.prediction}</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Confidence</span>
+                    <span class="metric-value">${confidence}%</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Method</span>
+                    <span class="metric-value" style="font-size: 0.8rem;">${survival.method || 'statistical'}</span>
+                </div>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" style="width: ${confidence}%; background: linear-gradient(90deg, #ed8936, #e53e3e);"></div>
+                </div>
+                <p style="margin-top: 1rem; font-size: 0.85rem; color: #718096; font-style: italic;">
+                    ⚠️ This is a statistical estimate. Individual outcomes vary significantly. Consult oncologist for personalized prognosis.
+                </p>
+            `;
+        }
+
+        function displayRecommendations(recommendations) {
+            const list = document.getElementById('recommendationsList');
+            list.innerHTML = recommendations.map(rec => `<li>${rec}</li>`).join('');
+        }
+
+        function resetAnalysis() {
+            resultsSection.style.display = 'none';
+            previewContainer.style.display = 'none';
+            selectedFile = null;
+            fileInput.value = '';
+            analyzeBtn.disabled = true;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Initialize
+        loadModels();
+    </script>
+</body>
+</html>
